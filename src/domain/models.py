@@ -44,16 +44,16 @@ CLOSABLE = {                    # statuses /close accepts (not Pending Approval 
     ComplaintStatus.ESCALATED,
 }
 
-APPROVAL_THRESHOLD_CAD = Decimal("10000.00")  # complaints over this amount require supervisor approval
+APPROVAL_THRESHOLD_CAD = Decimal("1000.00")  # complaints over this amount require supervisor approval
 
 
 
 def transition_problem(current, target, role):  #returns None if transition is allowed
     key = (ComplaintStatus(current), ComplaintStatus(target))
     if key not in ALLOWED_TRANSITIONS:
-        return "Invalid transition"
+        return "INVALID_TRANSITION"
     if Role(role) not in ALLOWED_TRANSITIONS[key]:
-        return "Forbidden Role"
+        return "FORBIDDEN_ROLE"
     return None
 
 def can_transition(current, target, role):      #True if `role` may move a complaint from `current` to `target`

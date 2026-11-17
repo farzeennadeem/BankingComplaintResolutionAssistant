@@ -1,8 +1,12 @@
-import os                                   # lets Python read settings like DB_PATH
-from sqlalchemy import create_engine        # SQLAlchemy's way of setting up a database connection
+import os
+from sqlalchemy import create_engine
 
 
-def get_database_engine():
-    db_path = os.getenv("DB_PATH", "docs/database/bank.db")   # read DB_PATH, or use the default file
-    return create_engine(f"sqlite:///{db_path}")                # "sqlite:///" tells SQLAlchemy which kind of database this is
-    # To move to another database later (e.g. PostgreSQL), only this URL changes.
+class DatabaseManager:
+    def __init__(self, database_url=None):
+        if database_url is None:                                   
+            database_url = os.getenv("DATABASE_URL", "sqlite:///docs/database/bank.db")  # use the setting, or the default file
+        self.engine = create_engine(database_url)                  # set up the connection to that database
+
+    def transaction(self):
+        return self.engine.begin()   # opens a connection; saves (commit) if all goes well, undoes (rollback) on error, then closes
