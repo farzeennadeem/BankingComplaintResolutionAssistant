@@ -1,5 +1,5 @@
 from decimal import Decimal
-from enum import Enum  # enum is fixed list of allowed values
+from enum import Enum  # enum is a fixed list of allowed values
 
 class Category(str, Enum):
     FEES = "Fees"
@@ -47,8 +47,6 @@ CLOSABLE = {                    # statuses /close accepts (not Pending Approval 
 APPROVAL_THRESHOLD_CAD = Decimal("10000.00")  # complaints over this amount require supervisor approval
 
 
-def can_transition(current, target, role):      #True if `role` may move a complaint from `current` to `target`
-    return transition_problem(current, target, role) is None
 
 def transition_problem(current, target, role):  #returns None if transition is allowed
     key = (ComplaintStatus(current), ComplaintStatus(target))
@@ -57,6 +55,9 @@ def transition_problem(current, target, role):  #returns None if transition is a
     if Role(role) not in ALLOWED_TRANSITIONS[key]:
         return "Forbidden Role"
     return None
+
+def can_transition(current, target, role):      #True if `role` may move a complaint from `current` to `target`
+    return transition_problem(current, target, role) is None
 
 def needs_approval(compensation_amount):
     return Decimal(str(compensation_amount)) > APPROVAL_THRESHOLD_CAD   # str() first so floats don't sneak in rounding errors
