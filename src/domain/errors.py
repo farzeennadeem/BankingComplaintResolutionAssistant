@@ -5,6 +5,13 @@ class DomainError(Exception):
     code = "INTERNAL_ERROR" # the error code the API will send back
     http_status = 500       # the HTTP status the API use
 
+    retryable = False       # can the caller try again later?
+
+    def __init__(self, message, details=None):
+        super().__init__(message)
+        self.message = message      # readable text e.g. "Complaint CMP999 not found"
+        self.details = details      # optional extra info
+
 class NotFound(DomainError):        # e.g. a complaint ID that doesn't exist
     code = "NOT_FOUND"
     http_status = 404

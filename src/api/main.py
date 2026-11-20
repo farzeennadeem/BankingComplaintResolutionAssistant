@@ -8,7 +8,7 @@ create_app() takes optional db and service objects so tests can pass their own.
 from fastapi import FastAPI 
 
 from src.api.errors import install_error_handlers 
-from src.api.routers import health 
+from src.api.routers import complaints, customers, health 
 from src.config import get_settings 
 from src.data.database_manager import DatabaseManager 
 from src.services.complaint_service import ComplaintService 
@@ -21,6 +21,8 @@ def create_app(db=None, service=None):
     app.state.service = service or ComplaintService(app.state.db) 
     install_error_handlers(app) 
     app.include_router(health.router) 
+    app.include_router(customers.router)
+    app.include_router(complaints.router)
 
     return app 
 

@@ -39,7 +39,7 @@ def audit_event_id_for(history_id):
     """Week 3 has no audit table: every write adds one history row, that row is the 
     write's audit record, and audit_event_id names it (H00281 -> AUD-000281). 
     Sprint 3's audit log replaces this.""" 
-    return f"AUD-{int(history_id[1:]):06d}" 
+    return f"AUD-{int(history_id):06d}" 
 
 
 class ComplaintService:
@@ -120,7 +120,26 @@ class ComplaintService:
 
         return {"complaint_id": complaint_id, "previous_status": current, "status": ComplaintStatus.CLOSED.value, "date_closed": date_closed.isoformat(), "closed_by": actor_id, "approval_id": None, "audit_event_id": audit_event_id_for(history_id)}
 
-  
+    def get_customer_complaints(self, customer_id):
+        with self.db.transaction() as conn:
+            repos = self.repositories(conn)
+            if repos.customers.get_by_id(customer_id) is None:
+                raise NotFound(f"Customer {customer_id} not found.")
+            complaints = repos.complaints.get_for_customer(customer_id)
+        return {"customer_id": customer_id, "complaints": complaints}
+
+    def create_complaint(self, customer_id, account_id, channel, category, complaint_text, priority, actor_id=None):
+        with self.db.transaction() as conn:
+            repos = self.repositories(conn)
+            if repos.customers.get_by_id(customer_id) is None:
+                raise NotFound(f"Customer {customer_id} not found.")
+            complaint_id = repos.complaints.next_id()
+            complaint = repos.complaints.create(complaint_id, customer_id, account_id, channel,
+                                                category, complaint_text, priority)
+            repos.history.add(complaint_id, None, complaint["status"],
+                              datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"), actor_id)
+        return {"complaint_id": complaint_id, "status": complaint["status"]}
+
 
 def _v(value):
     """Enum member or plain string -> plain string.""" 

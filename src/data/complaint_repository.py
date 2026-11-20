@@ -48,3 +48,10 @@ class ComplaintRepository:
             {"status": status, "complaint_id": complaint_id},
         )
         return result.rowcount      # how many rows changed
+
+    def next_id(self):
+        row = self.conn.execute(
+            text("SELECT MAX(CAST(SUBSTR(complaint_id, 4) AS INTEGER)) AS highest FROM complaint")
+        ).mappings().fetchone()                 # the highest number after "CMP"
+        highest = row["highest"] or 0           # 0 if the table is empty
+        return f"CMP{highest + 1:03d}"          # CMP030 -> CMP031
