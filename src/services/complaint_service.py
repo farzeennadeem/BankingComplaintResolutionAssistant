@@ -75,7 +75,7 @@ class ComplaintService:
 
     def change_status(self, complaint_id, target_status, reason, role, actor_id=None):
         target = _v(target_status)                           # accept "In Review" or ComplaintStatus.IN_REVIEW
-        with self.db.transaction() as conn:
+        with self.db.transaction() as conn:             # TRANSACTION STARTS
             repos = self.repositories(conn)
 
             complaint = repos.complaints.get_by_id(complaint_id)
@@ -92,9 +92,11 @@ class ComplaintService:
                 raise InvalidTransition(message) # in errors.py
 
             changed_at = datetime.now(timezone.utc)
-            repos.complaints.update_status(complaint_id, target)
-            history_id = repos.history.add(complaint_id, current, target, changed_at.strftime("%Y-%m-%d %H:%M:%S"), actor_id)
+            repos.complaints.update_status(complaint_id, target)            # write 1: UPDATE complaint
+            history_id = repos.history.add(complaint_id, current, target, changed_at.strftime("%Y-%m-%d %H:%M:%S"), actor_id)       # write 2: INSERT history
+            # TRANSACTION ENDS: both commit, or both roll back
 
+        # built from the new history_id
         return {"complaint_id": complaint_id, "previous_status": current, "status": target, "changed_by": actor_id, "changed_at": changed_at.isoformat(), "audit_event_id": audit_event_id_for(history_id)}
 
     def close(self, complaint_id, compensation_cad=Decimal("0"), role="Supervisor", actor_id=None):
