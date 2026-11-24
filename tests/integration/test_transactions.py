@@ -1,5 +1,9 @@
 """Exercise 3.3.1: every write changes the complaint and its history row together,
-and a failure part-way leaves the database exactly as it was."""
+and a failure part-way leaves the database exactly as it was.
+
+python -m pytest tests/integration -v      # 3 passed
+python -m pytest tests/integration -v      # run again: 3 passed (nothing left behind proves nothing was changed in db)
+"""
 from decimal import Decimal
 
 import pytest

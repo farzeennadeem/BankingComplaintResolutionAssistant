@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import create_engine
 
-
+# "Door" to db
 class DatabaseManager:
     def __init__(self, database_url=None):
         if database_url is None:                                   
