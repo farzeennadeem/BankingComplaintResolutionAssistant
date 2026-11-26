@@ -57,3 +57,5 @@ local.db
 *~
 .DS_Store
 Thumbs.db
+
+data/index/

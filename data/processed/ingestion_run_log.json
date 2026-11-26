@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "error": null,
+  "started_at": "2026-11-25T16:53:15+00:00",
+  "finished_at": "2026-11-25T16:53:17+00:00",
+  "source_root": "data/raw",
+  "counts": {
+    "accepted": 12,
+    "rejected": 1,
+    "warnings": 0,
+    "pre_chunks": 175
+  },
+  "accepted": [
+    "KB-001",
+    "KB-002",
+    "KB-003",
+    "KB-004",
+    "KB-005",
+    "KB-006",
+    "KB-007",
+    "KB-008",
+    "KB-009",
+    "KB-010",
+    "BUL-2026-01",
+    "BUL-2026-02"
+  ],
+  "rejected": [
+    {
+      "item": "KB-001-OLD",
+      "reason": "04_Bulletins_and_Versioning/KB-001-OLD_Superseded_Complaint_Handling_Policy.docx is listed in the manifest but missing from data/raw"
+    }
+  ],
+  "warnings": []
+}

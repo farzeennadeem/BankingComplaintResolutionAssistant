@@ -1,2 +1,7 @@
 sqlalchemy>=2.0
 pytest
+python-docx
+
+google-genai
+chromadb
+python-dotenv
